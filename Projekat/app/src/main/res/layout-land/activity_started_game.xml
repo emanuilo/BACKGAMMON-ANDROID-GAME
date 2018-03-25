@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.emanu.pmu_projekat.StartedGameActivity"
+    android:background="@drawable/board">
+
+    <Button
+        android:id="@+id/roll_button"
+        android:layout_width="50dp"
+        android:layout_height="22dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="290dp"
+        android:layout_marginTop="11dp"
+        android:background="@drawable/button_selector"
+        android:text="Roll"
+        android:onClick="onClickRoll"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp" />
+
+    <com.example.emanu.pmu_projekat.MyImageView
+        android:id="@+id/myImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</RelativeLayout>

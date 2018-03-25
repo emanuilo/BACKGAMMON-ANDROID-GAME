@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_background_blurred2"
+    tools:context="com.example.emanu.pmu_projekat.MainActivity">
+
+    <Button
+        android:id="@+id/continue_button"
+        android:layout_width="186dp"
+        android:layout_height="38dp"
+        android:layout_above="@+id/newgame_button"
+        android:layout_alignStart="@+id/newgame_button"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/button_selector"
+        android:onClick="onclick"
+        android:text="Continue"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/newgame_button"
+        android:layout_width="186dp"
+        android:layout_height="38dp"
+        android:layout_above="@+id/stats_button"
+        android:layout_alignStart="@+id/stats_button"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/button_selector"
+        android:onClick="onClickNewGame"
+        android:text="New Game"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/stats_button"
+        android:layout_width="186dp"
+        android:layout_height="38dp"
+        android:layout_above="@+id/options_button"
+        android:layout_alignStart="@+id/options_button"
+        android:layout_marginBottom="31dp"
+        android:background="@drawable/button_selector"
+        android:onClick="onclick"
+        android:text="Stats"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/options_button"
+        android:layout_width="186dp"
+        android:layout_height="38dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="84dp"
+        android:background="@drawable/button_selector"
+        android:onClick="onclick"
+        android:text="Options"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+</RelativeLayout>
