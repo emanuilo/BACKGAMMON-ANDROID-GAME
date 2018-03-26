@@ -52,10 +52,9 @@ public class Model {
     private float lastY;
     private float lastZ;
     private long lastShakeTime;
-
     private MediaPlayer mediaPlayer;
-
     private int BLABLA;
+
 
     public Model(String player1name, String player2name, boolean isPlayer1Black, boolean isComputer) {
         black.setColor(Color.BLACK);
@@ -121,15 +120,58 @@ public class Model {
             opponent = player2;
 
         availablePositions = new ArrayList<>();
+        boolean bearOffFlag = false;
         for (int i = 0; i < availableMoves.size(); i++){
             if(playerOnTurn.getColor().getColor() == Color.WHITE){
-                if((availableMoves.get(i) + sourceIndex) < 24 && opponent.getTriangles().get(availableMoves.get(i) + sourceIndex).size() < 2){
+                if(playerOnTurn.isBearingOff && availableMoves.get(i) + sourceIndex > 24 && !bearOffFlag){
+                    boolean lastNonEmpty = true;
+                    for(int j = sourceIndex - 1; j > 17; j--){
+                        if(playerOnTurn.triangles.get(j).size() > 0){
+                            lastNonEmpty = false;
+                            break;
+                        }
+                    }
+                    if(lastNonEmpty && sourceIndex > 18){
+                        Triangle newPosition = new Triangle(24, imageViewHeight, imageViewWidth);
+                        newPosition.setBearingOff(0);
+                        availablePositions.add(newPosition);
+                        bearOffFlag = true;
+                    }
+                }
+                else if(playerOnTurn.isBearingOff && availableMoves.get(i) + sourceIndex == 24 && !bearOffFlag){
+                    Triangle newPosition = new Triangle(24, imageViewHeight, imageViewWidth);
+                    newPosition.setBearingOff(0);
+                    availablePositions.add(newPosition);
+                    bearOffFlag = true;
+                }
+                else if((availableMoves.get(i) + sourceIndex) < 24 && opponent.getTriangles().get(availableMoves.get(i) + sourceIndex).size() < 2){
                     Triangle newPosition = new Triangle(availableMoves.get(i) + sourceIndex, imageViewHeight, imageViewWidth);
                     availablePositions.add(newPosition);
                 }
             }
             else{
-                if((sourceIndex - availableMoves.get(i)) >= 0 && opponent.getTriangles().get(sourceIndex - availableMoves.get(i)).size() < 2){
+                if(playerOnTurn.isBearingOff && sourceIndex - availableMoves.get(i) < -1 && !bearOffFlag){
+                    boolean lastNonEmpty = true;
+                    for(int j = sourceIndex + 1; j < 6; j++){
+                        if(playerOnTurn.triangles.get(j).size() > 0){
+                            lastNonEmpty = false;
+                            break;
+                        }
+                    }
+                    if(lastNonEmpty && sourceIndex < 5){
+                        Triangle newPosition = new Triangle(-1, imageViewHeight, imageViewWidth);
+                        newPosition.setBearingOff(1);
+                        availablePositions.add(newPosition);
+                        bearOffFlag = true;
+                    }
+                }
+                else if(playerOnTurn.isBearingOff && sourceIndex - availableMoves.get(i) == -1 && !bearOffFlag){
+                    Triangle newPosition = new Triangle(-1, imageViewHeight, imageViewWidth);
+                    newPosition.setBearingOff(1);
+                    availablePositions.add(newPosition);
+                    bearOffFlag = true;
+                }
+                else if((sourceIndex - availableMoves.get(i)) >= 0 && opponent.getTriangles().get(sourceIndex - availableMoves.get(i)).size() < 2){
                     Triangle newPosition = new Triangle(sourceIndex - availableMoves.get(i), imageViewHeight, imageViewWidth);
                     availablePositions.add(newPosition);
                 }
@@ -138,7 +180,7 @@ public class Model {
     }
 
     public void onActionDown(int x, int y) {
-//        if(gameStatus.equals(WAITING_FOR_MOVE)){
+//       todo if(gameStatus.equals(WAITING_FOR_MOVE)){
 
             int sourceTriangleIndex = selectChecker(x, y);
             if(currentChecker == null) return;
@@ -157,10 +199,7 @@ public class Model {
 
     public void onActionUp(int x, int y){
         if(currentChecker != null){
-            currentChecker.bearOff(0, BLABLA++);
-            currentChecker = null;
-        }
-        if(currentChecker != null){
+
             for (int i = 0; i < availablePositions.size(); i++) {
                 Triangle triangle = availablePositions.get(i);
                 int x1 = triangle.getX1();
@@ -169,13 +208,20 @@ public class Model {
                 int y2 = triangle.getY2();
                 int x3 = triangle.getX3();
                 int y3 = triangle.getY3();
-                if(isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3)){
+                if(triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2)){
+                    sourceTriangle.remove(currentChecker); //remove from old triangle
+                    currentChecker.bearOff(playerOnTurn.isWhite() ? 0 : 1, playerOnTurn.bearedOffCheckers.size());
+                    playerOnTurn.bearedOffCheckers.add(currentChecker);
+                    break;
+                }
+                else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3)){
                     opponent.eatOpponentsChecker(triangle.getTriangleIndex());
                     sourceTriangle.remove(currentChecker); //remove from old triangle
                     int position = playerOnTurn.getTriangles().get(triangle.getTriangleIndex()).size(); //position index in new triangle
                     playerOnTurn.getTriangles().get(triangle.getTriangleIndex()).add(currentChecker); //add checker to new triangle
                     currentChecker.setOnPosition(imageViewHeight, imageViewWidth, triangle.getTriangleIndex(), position); //change x,y coords
                     destinationTriangleIndex = triangle.getTriangleIndex();
+                    allInHomeBoard(playerOnTurn.isWhite() ? 0 : 1);
                     updateAvailableMoves();
                     break;
                 }
@@ -184,7 +230,6 @@ public class Model {
                     currentChecker.setY(oldY);
                 }
             }
-
             if(availablePositions.size() == 0){
                 currentChecker.setX(oldX);
                 currentChecker.setY(oldY);
@@ -193,6 +238,17 @@ public class Model {
             availablePositions = null;
             currentChecker = null;
         }
+    }
+
+    public void allInHomeBoard(int black){
+        for(int i = 0 + black * 6; i < 18 + black * 6; i++){
+            if(playerOnTurn.triangles.get(i).size() > 0){
+                playerOnTurn.isBearingOff = false;
+                return;
+            }
+        }
+
+        playerOnTurn.isBearingOff = true;
     }
 
     public void updateAvailableMoves(){
@@ -245,6 +301,10 @@ public class Model {
                 dice2.incOpacity();
             }
         }
+    }
+
+    public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2){
+        return px >= x1 && px <= x2 && py >= y1 && py <= y2;
     }
 
     public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2, int x3, int y3){

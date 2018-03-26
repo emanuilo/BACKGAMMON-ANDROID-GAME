@@ -83,8 +83,8 @@ public class Checker extends Figure {
         this.bearedOff = true;
         x = (int) (width * 0.02);
         x2 = (int) (width * 0.06);
-        y = (int) (height * (0.952 - index * 0.026 - blackChecker * 0.5));
-        y2 = (int) (height * (0.972 - index * 0.026 - blackChecker * 0.5));
+        y = (int) (height * (0.953 - index * 0.025 - blackChecker * 0.48));
+        y2 = (int) (height * (0.972 - index * 0.025 - blackChecker * 0.48));
     }
 
     public int getX() {

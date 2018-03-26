@@ -11,6 +11,13 @@ import android.support.annotation.NonNull;
  */
 
 public class Triangle extends Figure {
+    public static final int BEAR_OFF_RADIUS = 15;
+    public static final double BEAR_OFF_X1 = 0.01;
+    public static final double BEAR_OFF_X2 = 0.07;
+    public static final double BEAR_OFF_Y1 = 0.591;
+    public static final double BEAR_OFF_Y2 = 0.987;
+    public static final double BEAR_OFF_OFFSET = 0.4785;
+
     public static final double OFFSET = 0.066;
     public static final double OFFSET2 = 0.092;
     public static final double POS_X1_UP = 0.10;
@@ -43,6 +50,8 @@ public class Triangle extends Figure {
     private int y2;
     private int y3;
 
+    private boolean bearingOff;
+
     public Triangle(int triangleIndex, int height, int width) {
         this.height = height;
         this.width = width;
@@ -56,6 +65,9 @@ public class Triangle extends Figure {
     public void draw(@NonNull Canvas canvas) {
         Path trianglePath = new Path();
         switch (triangleIndex){
+            case -1: case 24:
+                canvas.drawRoundRect(x1, y1, x2, y2, BEAR_OFF_RADIUS, BEAR_OFF_RADIUS, color);
+                break;
             case 0: case 1: case 2: case 3: case 4: case 5:
                 x1 = (int)(width * (POS_X1_UP + triangleIndex * OFFSET));
                 y1 = (int)(height * POS_Y1_UP);
@@ -108,6 +120,18 @@ public class Triangle extends Figure {
 
 
         canvas.drawPath(trianglePath, color);
+    }
+
+    public void setBearingOff(int black){
+        bearingOff = true;
+        x1 = (int) (width * BEAR_OFF_X1);
+        x2 = (int) (width * BEAR_OFF_X2);
+        y1 = (int) (height * (BEAR_OFF_Y1 - black * BEAR_OFF_OFFSET));
+        y2 = (int) (height * (BEAR_OFF_Y2 - black * BEAR_OFF_OFFSET));
+    }
+
+    public boolean isBearingOff() {
+        return bearingOff;
     }
 
     public int getX1() {

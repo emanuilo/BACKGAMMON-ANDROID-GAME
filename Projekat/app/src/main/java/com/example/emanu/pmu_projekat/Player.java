@@ -15,9 +15,11 @@ public class Player {
     protected List<Checker> checkers = new ArrayList<>();
     protected List<List<Checker>> triangles = new ArrayList<List<Checker>>(24) ;
     protected List<Checker> eatenCheckers = new ArrayList<>();
+    protected List<Checker> bearedOffCheckers = new ArrayList<>();
     protected Paint color;
     protected int height;
     protected int width;
+    protected boolean isBearingOff;
 
     public Player(String name, Paint color) {
         this.name = name;
@@ -157,6 +159,14 @@ public class Player {
             checkers.add(checker);
             triangle8.add(checker);
         }
+    }
+
+    public boolean isBearingOff() {
+        return isBearingOff;
+    }
+
+    public void setBearingOff(boolean bearingOff) {
+        isBearingOff = bearingOff;
     }
 
     public void setHeightAndWidth(int h, int w) {
