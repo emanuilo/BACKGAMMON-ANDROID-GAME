@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 
 public class Checker extends Figure {
     public static final int RADIUS = 40;
-    public static final double TRIANGLE_OFFSET = 0.066;
+    public static final double TRIANGLE_OFFSET = 0.0655;
     public static final double POSITION_OFFSET = 0.077;
     public static final double TRIANGLE0 = 0.133;
     public static final double TRIANGLE6 = 0.618;

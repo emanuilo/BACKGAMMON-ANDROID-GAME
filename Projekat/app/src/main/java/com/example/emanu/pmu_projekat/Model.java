@@ -212,6 +212,8 @@ public class Model {
                     sourceTriangle.remove(currentChecker); //remove from old triangle
                     currentChecker.bearOff(playerOnTurn.isWhite() ? 0 : 1, playerOnTurn.bearedOffCheckers.size());
                     playerOnTurn.bearedOffCheckers.add(currentChecker);
+                    destinationTriangleIndex = triangle.getTriangleIndex();
+                    updateAvailableMoves();
                     break;
                 }
                 else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3)){
@@ -256,9 +258,19 @@ public class Model {
 
         int moveToDelete = -1;
         for(int i = 0; i < availableMoves.size(); i++){
-            if(availableMoves.get(i).intValue() == positionDifference){
+            if(availableMoves.get(i) == positionDifference){
                 moveToDelete = i;
                 break;
+            }
+        }
+
+        if(moveToDelete == -1){  //bearing off
+            int minValue = 7;
+            for (int i = 0; i < availableMoves.size(); i++) {
+                if(availableMoves.get(i) < minValue){
+                    minValue = availableMoves.get(i);
+                    moveToDelete = i;
+                }
             }
         }
 
@@ -308,21 +320,21 @@ public class Model {
     }
 
     public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2, int x3, int y3){
-        double w1 = (x1*(y3 - y1) + (py - y1)*(x3 - x1) - px*(y3 - y1))/((y2 - y1)*(x3 - x1) - (x2 - x1)*(y3 - y1));
-        double w2 = (py - y1 - w1*(y2 - y1))/(y3 - y1);
-
-        return w1 >= 0 && w1 >= 0 && (w1 + w2) <= 1;
-
-//        int as_x = px-x1;
-//        int as_y = py-y1;
+//        double w1 = (x1*(y3 - y1) + (py - y1)*(x3 - x1) - px*(y3 - y1))/((y2 - y1)*(x3 - x1) - (x2 - x1)*(y3 - y1));
+//        double w2 = (py - y1 - w1*(y2 - y1))/(y3 - y1);
 //
-//        boolean s_ab = (x2-x1)*as_y-(y2-y1)*as_x > 0;
-//
-//        if((x3-x1)*as_y-(y3-y1)*as_x > 0 == s_ab) return false;
-//
-//        if((x3-x2)*(py-y2)-(y3-y2)*(px-x2) > 0 != s_ab) return false;
+//        return w1 >= 0 && w1 >= 0 && (w1 + w2) <= 1;
 
-//        return true;
+        int as_x = px-x1;
+        int as_y = py-y1;
+
+        boolean s_ab = (x2-x1)*as_y-(y2-y1)*as_x > 0;
+
+        if((x3-x1)*as_y-(y3-y1)*as_x > 0 == s_ab) return false;
+
+        if((x3-x2)*(py-y2)-(y3-y2)*(px-x2) > 0 != s_ab) return false;
+
+        return true;
     }
 
     private double distance(int x1, int x2, int y1, int y2){
