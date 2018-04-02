@@ -8,7 +8,7 @@ import android.graphics.Paint;
 
 public class Computer extends Player{
 
-    public Computer(String name, Paint color) {
+    public Computer(String name, MyPaint color) {
         super(name, color);
     }
 

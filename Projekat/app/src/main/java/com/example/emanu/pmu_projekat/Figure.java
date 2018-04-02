@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 
 public abstract class Figure extends Drawable{
 
+    public void Figure(){}
+
     @Override
     public void setAlpha(int i) {
 

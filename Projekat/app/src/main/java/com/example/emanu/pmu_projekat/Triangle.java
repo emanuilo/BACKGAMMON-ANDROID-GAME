@@ -6,11 +6,13 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Created by emanu on 3/20/2018.
  */
 
-public class Triangle extends Figure {
+public class Triangle extends Figure implements Serializable{
     public static final int BEAR_OFF_RADIUS = 15;
     public static final double BEAR_OFF_X1 = 0.01;
     public static final double BEAR_OFF_X2 = 0.07;

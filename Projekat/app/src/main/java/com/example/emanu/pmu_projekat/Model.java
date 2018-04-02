@@ -1,10 +1,9 @@
 package com.example.emanu.pmu_projekat;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.media.MediaPlayer;
-import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +11,21 @@ import java.util.List;
  * Created by emanu on 3/7/2018.
  */
 
-public class Model {
-    public static final String WAITING_FOR_MOVE = "WAITING_FOR_MOVE";
-    public static final String WAITING_FOR_ROLL = "WAITING_FOR_ROLL";
-    private Paint black = new Paint();
-    private Paint white = new Paint();
-    private MyImageView myImageView;
+public class Model implements Serializable{
+    public static final int SHAKE_TIMEOUT = 500;
+    public static final int SPEED_THRESHOLD = 800;
+    public static final int DIFFTIME_THRESHOLD = 100;
+    public enum State{
+        INITIAL_ROLL1, INITIAL_ROLL2, WAITING_FOR_ROLL, WAITING_FOR_MOVE;
+    }
+
+    public static final String ROLL_THE_DICE = "roll the dice";
+    public static final String IS_ON_TURN = "is on turn";
+
+    private MyPaint black = new MyPaint();
+    private MyPaint white = new MyPaint();
+    private transient MyImageView myImageView;
+    private StartedGameActivity startedGameActivity;
     private int imageViewHeight;
     private int imageViewWidth;
 
@@ -27,12 +35,13 @@ public class Model {
 
     private Checker currentChecker;
 
+    private State gameStatus;
     private Dice dice1;
     private Dice dice2;
     private Dice dice3;
     private Dice dice4;
+    private int initialValuePlayer1;
     private List<Integer> availableMoves;
-    private String gameStatus;
     private List<Triangle> availablePositions;
     private List<Checker> sourceTriangle;
     private int sourceTriangleIndex;
@@ -44,19 +53,18 @@ public class Model {
     private int usedDices;
     private Player opponent;
 
-    public static final int SHAKE_TIMEOUT = 500;
-    public static final int SPEED_THRESHOLD = 600;
-    public static final int DIFFTIME_THRESHOLD = 100;
     private long lastTime = 0;
     private float lastX;
     private float lastY;
     private float lastZ;
     private long lastShakeTime;
-    private MediaPlayer mediaPlayer;
-    private int BLABLA;
+    private MyMediaPlayer mediaPlayerShaking;
+    private MyMediaPlayer mediaPlayerRolling;
+    private boolean loaded;
 
 
-    public Model(String player1name, String player2name, boolean isPlayer1Black, boolean isComputer) {
+    public Model(String player1name, String player2name, boolean isPlayer1Black, boolean isComputer, StartedGameActivity startedGameActivity) {
+        this.startedGameActivity = startedGameActivity;
         black.setColor(Color.BLACK);
         white.setColor(Color.WHITE);
         player1 = new Human(player1name, isPlayer1Black ? black : white);
@@ -65,15 +73,17 @@ public class Model {
         else
             player2 = new Human(player2name, isPlayer1Black ? white : black);
         playerOnTurn = player2;
-        gameStatus = WAITING_FOR_ROLL;
+        gameStatus = State.INITIAL_ROLL1;
+        startedGameActivity.setConsoleText(player1.name + " " + ROLL_THE_DICE);
 
         dices.add(dice3 = new Dice(true, true));
         dices.add(dice4 = new Dice(false, true));
         dices.add(dice1 = new Dice(true, false));
         dices.add(dice2 = new Dice(false, false));
 
-        mediaPlayer = MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice);
-        mediaPlayer.setLooping(true);
+        mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
+        mediaPlayerShaking.setLooping(true);
+        mediaPlayerRolling = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.rolling_dice));
     }
 
     public int selectChecker(int x, int y){
@@ -180,14 +190,12 @@ public class Model {
     }
 
     public void onActionDown(int x, int y) {
-//       todo if(gameStatus.equals(WAITING_FOR_MOVE)){
-
+       if(gameStatus == State.WAITING_FOR_MOVE){
             int sourceTriangleIndex = selectChecker(x, y);
             if(currentChecker == null) return;
 
-
             findSpots(sourceTriangleIndex);
-//        }
+        }
     }
 
     public void onActionMove(int x, int y) {
@@ -313,6 +321,12 @@ public class Model {
                 dice2.incOpacity();
             }
         }
+
+        if(availableMoves.size() == 0){
+            switchPlayerOnTurn();
+            gameStatus = State.WAITING_FOR_ROLL;
+            startedGameActivity.setConsoleText(playerOnTurn.name + " " + ROLL_THE_DICE);
+        }
     }
 
     public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2){
@@ -341,15 +355,7 @@ public class Model {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
-    public void roll(){
-        switchPlayerOnTurn();
-        dice3.setShow(false);
-        dice4.setShow(false);
-        dice1.roll();
-        dice2.roll();
-        dice1.setShow(true);
-        dice2.setShow(true);
-        doubles = false;
+    public void createAvailableMoves(){
         availableMoves = new ArrayList<>();
         usedDices = 0;
         for(int i = 0; i < 4; i++){
@@ -373,6 +379,52 @@ public class Model {
         }
     }
 
+    public void roll(){
+
+        switch (gameStatus){
+            case INITIAL_ROLL1:
+                dice1.roll();
+                dice1.setShow(true);
+                dice2.setShow(false);
+
+                initialValuePlayer1 = dice1.getValue();
+                startedGameActivity.setConsoleText(player2.name + " " + ROLL_THE_DICE);
+                gameStatus = State.INITIAL_ROLL2;
+                break;
+            case INITIAL_ROLL2:
+                dice2.roll();
+                dice2.setShow(true);
+                if(initialValuePlayer1 < dice2.getValue()){
+                    playerOnTurn = player2;
+                    startedGameActivity.setConsoleText(player2.name + " " + IS_ON_TURN);
+                    gameStatus = State.WAITING_FOR_MOVE;
+                    createAvailableMoves();
+                }
+                else if (initialValuePlayer1 > dice2.getValue()){
+                    playerOnTurn = player1;
+                    startedGameActivity.setConsoleText(player1.name + " " + IS_ON_TURN);
+                    gameStatus = State.WAITING_FOR_MOVE;
+                    createAvailableMoves();
+                }
+                else{ //equals
+
+                }
+                break;
+            case WAITING_FOR_ROLL:
+                dice1.roll();
+                dice2.roll();
+                dice1.setShow(true);
+                dice2.setShow(true);
+                dice3.setShow(false);
+                dice4.setShow(false);
+                doubles = false;
+                createAvailableMoves();
+                gameStatus = State.WAITING_FOR_MOVE;
+                startedGameActivity.setConsoleText("");
+                break;
+        }
+    }
+
     public void switchPlayerOnTurn(){
         if(playerOnTurn == player1)
             playerOnTurn = player2;
@@ -383,14 +435,16 @@ public class Model {
     public void onNewValues(float values[], long time){
         long currentTime = android.os.SystemClock.uptimeMillis();
 
+        if(gameStatus == State.WAITING_FOR_MOVE) return;
+
         if(currentTime - lastTime > DIFFTIME_THRESHOLD){
             long diffTime = currentTime - lastTime;
             lastTime = currentTime;
             float speed = Math.abs(values[0] + values[1] + values[2] - lastX - lastY - lastZ) / diffTime * 10000;
 
             if(speed > SPEED_THRESHOLD){
-                if(!mediaPlayer.isPlaying())
-                    mediaPlayer.start();
+                if(!mediaPlayerShaking.isPlaying())
+                    mediaPlayerShaking.start();
 
                 lastShakeTime = currentTime;
             }
@@ -401,13 +455,24 @@ public class Model {
         }
 
         if(currentTime - lastShakeTime > SHAKE_TIMEOUT){ //prestanak muckanja
-            if(mediaPlayer.isPlaying()){
-                mediaPlayer.pause();
+            if(mediaPlayerShaking.isPlaying()){
+                mediaPlayerShaking.pause();
+                mediaPlayerRolling.start();
                 roll();
                 myImageView.invalidate();
                 return;
             }
         }
+    }
+
+    public void setLoaded(){
+        loaded = true;
+    }
+
+    public void createMediaPlayers(){
+        mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
+        mediaPlayerShaking.setLooping(true);
+        mediaPlayerRolling = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.rolling_dice));
     }
 
     public void setHeightAndWidth(int h, int w) {
@@ -419,8 +484,10 @@ public class Model {
         dice2.setHeightAndWidth(h, w);
         dice3.setHeightAndWidth(h, w);
         dice4.setHeightAndWidth(h, w);
-        player1.initCheckers();
-        player2.initCheckers();
+        if(!loaded){
+            player1.initCheckers();
+            player2.initCheckers();
+        }
 
     }
 

@@ -3,6 +3,7 @@ package com.example.emanu.pmu_projekat;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +11,18 @@ import java.util.List;
  * Created by emanu on 3/12/2018.
  */
 
-public class Player {
+public class Player implements Serializable{
     protected String name;
     protected List<Checker> checkers = new ArrayList<>();
     protected List<List<Checker>> triangles = new ArrayList<List<Checker>>(24) ;
     protected List<Checker> eatenCheckers = new ArrayList<>();
     protected List<Checker> bearedOffCheckers = new ArrayList<>();
-    protected Paint color;
+    protected MyPaint color;
     protected int height;
     protected int width;
     protected boolean isBearingOff;
 
-    public Player(String name, Paint color) {
+    public Player(String name, MyPaint color) {
         this.name = name;
         this.color = color;
         for(int i = 0; i < 24; i++){
@@ -174,11 +175,11 @@ public class Player {
         this.width = w;
     }
 
-    public Paint getColor() {
+    public MyPaint getColor() {
         return color;
     }
 
-    public void setColor(Paint color) {
+    public void setColor(MyPaint color) {
         this.color = color;
     }
 

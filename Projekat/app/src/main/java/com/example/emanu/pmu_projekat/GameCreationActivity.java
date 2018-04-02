@@ -77,6 +77,7 @@ public class GameCreationActivity extends AppCompatActivity {
         boolean isComputer = ((CheckBox)findViewById(R.id.checkBoxComputer)).isChecked() ? true : false;
 
         Intent intent = new Intent(this, StartedGameActivity.class);
+        intent.putExtra(MainActivity.LOAD_GAME, false);
         intent.putExtra(PLAYER1NAME, player1Name);
         intent.putExtra(PLAYER2NAME, player2Name);
         intent.putExtra(IS_PLAYER1_BLACK, isPlayer1Black);

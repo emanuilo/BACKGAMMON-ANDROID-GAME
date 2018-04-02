@@ -5,11 +5,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Created by emanu on 3/12/2018.
  */
 
-public class Checker extends Figure {
+public class Checker extends Figure implements Serializable{
     public static final int RADIUS = 40;
     public static final double TRIANGLE_OFFSET = 0.0655;
     public static final double POSITION_OFFSET = 0.077;
@@ -22,8 +24,8 @@ public class Checker extends Figure {
     public static final double EDGE_OFFSET = 6 * 0.077;
 
 
-    private Paint grey = new Paint();
-    private Paint color;
+    private MyPaint grey = new MyPaint();
+    private MyPaint color;
     private int x, y;
     private int x2, y2;
     private String status;
@@ -32,7 +34,7 @@ public class Checker extends Figure {
     private boolean bearedOff;
 
 
-    public Checker(int x, int y, Paint color, int height, int width) {
+    public Checker(int x, int y, MyPaint color, int height, int width) {
         this.color = color;
         this.x = x;
         this.y = y;

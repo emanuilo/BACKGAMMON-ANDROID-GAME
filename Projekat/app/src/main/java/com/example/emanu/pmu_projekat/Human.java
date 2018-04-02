@@ -8,7 +8,7 @@ import android.graphics.Paint;
 
 public class Human extends Player{
 
-    public Human(String name, Paint color) {
+    public Human(String name, MyPaint color) {
         super(name, color);
     }
 }

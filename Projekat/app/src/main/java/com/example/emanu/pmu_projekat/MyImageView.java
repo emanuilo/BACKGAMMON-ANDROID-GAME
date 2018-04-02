@@ -9,13 +9,16 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by emanu on 3/11/2018.
  */
 
-public class MyImageView extends android.support.v7.widget.AppCompatImageView {
+public class MyImageView extends android.support.v7.widget.AppCompatImageView{
     public static final double POS_X1_UP = 0.10;
     public static final double POS_Y1_UP = 0.127;
 
@@ -34,11 +37,6 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView {
     public static final double POS_X3_DOWN = 0.1315;
     public static final double POS_Y3_DOWN = 0.61;
 
-
-
-
-
-
     private Model model;
     private int height1;
     private int width1;
@@ -54,11 +52,6 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView {
     public MyImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-//    public MyImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-//        super(context, attrs, defStyleAttr, defStyleRes);
-//    }
-
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -106,6 +99,5 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView {
     public void setModel(Model model) {
         this.model = model;
     }
-
 
 }

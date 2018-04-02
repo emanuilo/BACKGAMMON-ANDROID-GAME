@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String LOAD_GAME = "load_game";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +18,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         hideStatusBar();
+        File saveFile = new File(getFilesDir(), StartedGameActivity.SAVE_FILE);
+        if(!saveFile.exists()){
+            Button continueButton = findViewById(R.id.continue_button);
+            continueButton.setEnabled(false);
+            continueButton.setAlpha(0.8f);
+        }
+
     }
 
     public void hideStatusBar(){
@@ -29,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onClickContinue(View view) {
+        Intent intent = new Intent(this, StartedGameActivity.class);
+        intent.putExtra(LOAD_GAME, true);
+        startActivity(intent);
+    }
+
     public void onclick(View view) {
     }
+
 }

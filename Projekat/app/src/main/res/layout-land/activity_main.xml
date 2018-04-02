@@ -15,7 +15,7 @@
         android:layout_alignStart="@+id/newgame_button"
         android:layout_marginBottom="32dp"
         android:background="@drawable/button_selector"
-        android:onClick="onclick"
+        android:onClick="onClickContinue"
         android:text="Continue"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />

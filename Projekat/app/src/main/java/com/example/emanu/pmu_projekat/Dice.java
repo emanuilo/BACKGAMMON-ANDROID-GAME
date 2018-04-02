@@ -5,15 +5,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Created by emanu on 3/13/2018.
  */
 
-public class Dice extends Figure{
+public class Dice extends Figure implements Serializable{
     private int value;
     private boolean show;
-    private Paint color = new Paint();
-    private Paint black = new Paint();
+    private MyPaint color = new MyPaint();
+    private MyPaint black = new MyPaint();
     private int x1;
     private int x2;
     private int y1;
