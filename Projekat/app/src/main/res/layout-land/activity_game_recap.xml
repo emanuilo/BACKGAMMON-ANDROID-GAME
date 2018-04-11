@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.emanu.pmu_projekat.Activities.GameRecapActivity"
+    android:background="@drawable/home_background_blurred2">
+
+    <TextView
+        android:id="@+id/player1recap"
+        android:shadowColor="#5E311E"
+        android:shadowDx="5.0"
+        android:shadowDy="4.8"
+        android:shadowRadius="5.0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/player1score"
+        android:layout_alignBottom="@+id/player1score"
+        android:layout_toStartOf="@+id/player1score"
+        android:fontFamily="@font/boogaloo"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:layout_marginRight="40dp"
+        android:text="PLAYER 1"
+        android:textColor="#EFD892"
+        android:textSize="45dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/player1score"
+        android:shadowColor="#5E311E"
+        android:shadowDx="5.0"
+        android:shadowDy="4.8"
+        android:shadowRadius="5.0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:layout_marginRight="4dp"
+        android:layout_alignBaseline="@+id/columns"
+        android:layout_alignBottom="@+id/columns"
+        android:layout_toStartOf="@+id/columns"
+        android:fontFamily="@font/boogaloo"
+        android:text="17"
+        android:textColor="#EFD892"
+        android:textSize="50dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/columns"
+        android:shadowColor="#5E311E"
+        android:shadowDx="5.0"
+        android:shadowDy="4.8"
+        android:shadowRadius="5.0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/player2score"
+        android:layout_alignBottom="@+id/player2score"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/boogaloo"
+        android:text=" : "
+        android:textColor="#EFD892"
+        android:textSize="45dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/player2score"
+        android:shadowColor="#5E311E"
+        android:shadowDx="5.0"
+        android:shadowDy="4.8"
+        android:shadowRadius="5.0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/player2recap"
+        android:layout_alignBottom="@+id/player2recap"
+        android:layout_toEndOf="@+id/columns"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:fontFamily="@font/boogaloo"
+        android:text="12"
+        android:textColor="#EFD892"
+        android:textSize="50dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/player2recap"
+        android:shadowColor="#5E311E"
+        android:shadowDx="5.0"
+        android:shadowDy="4.8"
+        android:shadowRadius="5.0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/player2score"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="24dp"
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:fontFamily="@font/boogaloo"
+        android:text="PLAYER 2"
+        android:textColor="#EFD892"
+        android:textSize="45dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/menuButton"
+        android:layout_width="50dp"
+        android:layout_height="22dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/clearButton"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_selector"
+        android:fontFamily="@font/boogaloo"
+        android:onClick="onClickMenu"
+        android:text="Menu"
+        android:textColor="#EFD892"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/clearButton"
+        android:layout_width="50dp"
+        android:layout_height="22dp"
+        android:layout_above="@+id/listViewRecap"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button_selector"
+        android:fontFamily="@font/boogaloo"
+        android:onClick="onClickClear"
+        android:text="Clear"
+        android:textColor="#EFD892"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/listViewRecap"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+    </ListView>
+
+</RelativeLayout>

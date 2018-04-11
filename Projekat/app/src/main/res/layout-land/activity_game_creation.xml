@@ -1,147 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home_background_blurred2">
+    android:background="@drawable/home_background_blurred2"
+    android:layout_gravity="center"
+    android:gravity="center">
 
-    <TextView
-        android:id="@+id/textViewPlayer1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="55dp"
-        android:layout_marginTop="38dp"
-        android:layout_toStartOf="@+id/start_button"
-        android:text="Player 1: "
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical" >
 
-    <TextView
-        android:id="@+id/textViewPlayer2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textViewPlayer1"
-        android:layout_below="@+id/textViewPlayer1"
-        android:layout_marginTop="34dp"
-        android:text="Player 2: "
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/editTextPlayer1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textViewPlayer1"
-        android:layout_alignBottom="@+id/textViewPlayer1"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="@android:color/white"
-        android:ems="10"
-        android:text="Player 1"
-        android:imeOptions="flagNoFullscreen"
-        android:inputType="textPersonName"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#FFFF"
-        android:textSize="22sp" />
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_toEndOf="@+id/editTextPlayer1"
-        android:layout_alignBottom="@+id/textViewPlayer1"
-        android:layout_marginLeft="10sp">
-
-        <RadioButton
-            android:id="@+id/radioBlackPlayer1"
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@android:color/black"
-            android:checked="true"/>
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/start_button"
+            android:paddingBottom="25dp"
+            android:paddingRight="14dp"
+            app:srcCompat="@drawable/game_creation_pad" />
 
-        <RadioButton
-            android:id="@+id/radioWhitePlayer1"
+        <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/editTextPlayer1"
+            android:layout_above="@+id/editTextPlayer2"
+            android:layout_marginBottom="14dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/radioGroup">
+
+            <RadioButton
+                android:id="@+id/radioBlackPlayer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@android:color/black"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/radioWhitePlayer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@android:color/white"
+                android:layout_marginLeft="5dp"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textViewPlayer1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textViewPlayer2"
+            android:layout_toLeftOf="@id/editTextPlayer1"
+            android:layout_alignBaseline="@id/editTextPlayer1"
+            android:fontFamily="@font/boogaloo"
+            android:text="Player 1: "
+            android:textColor="#914A2A"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextPlayer1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/editTextPlayer2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="@android:color/white"
+            android:ems="10"
+            android:fontFamily="@font/boogaloo"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPersonName"
+            android:text="Player 1"
+            android:textColor="#914A2A"
+            android:textColorHint="#EFD892"
+            android:textSize="25dp" />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/editTextPlayer2"
+            android:layout_alignBottom="@+id/textViewPlayer2"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/radioGroup2">
+
+            <RadioButton
+                android:id="@+id/radioBlackPlayer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@android:color/black"/>
+
+            <RadioButton
+                android:id="@+id/radioWhitePlayer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@android:color/white"
+                android:checked="true"
+                android:layout_marginLeft="5dp"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textViewPlayer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/editTextPlayer2"
+            android:layout_marginBottom="20dp"
+            android:layout_above="@id/textViewComputer"
+            android:fontFamily="@font/boogaloo"
+            android:text="Player 2: "
+            android:textColor="#914A2A"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextPlayer2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/textViewComputer"
+            android:layout_marginBottom="10dp"
+            android:ems="10"
+            android:fontFamily="@font/boogaloo"
+            android:imeOptions="flagNoFullscreen"
+            android:inputType="textPersonName"
+            android:text="Player 2"
+            android:textColor="#914A2A"
+            android:textColorHint="#EFD892"
+            android:textSize="25dp" />
+
+        <CheckBox
+            android:id="@+id/checkBoxComputer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/textViewComputer"
+            android:layout_alignBottom="@+id/textViewComputer"
+            android:layout_toStartOf="@+id/start_button"
             android:buttonTint="@android:color/white"
-            android:layout_marginLeft="5sp"/>
-    </RadioGroup>
+            android:textSize="22dp" />
 
-    <EditText
-        android:id="@+id/editTextPlayer2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editTextPlayer1"
-        android:layout_below="@+id/editTextPlayer1"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Player 2"
-        android:textColorHint="#FFFF"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="@android:color/white"
-        android:textSize="22sp"
-        android:imeOptions="flagNoFullscreen"/>
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_toEndOf="@+id/editTextPlayer2"
-        android:layout_alignBottom="@+id/textViewPlayer2"
-        android:layout_marginLeft="10sp">
-
-        <RadioButton
-            android:id="@+id/radioBlackPlayer2"
+        <TextView
+            android:id="@+id/textViewComputer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@android:color/black"/>
+            android:layout_above="@+id/start_button"
+            android:layout_marginBottom="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/checkBoxComputer"
+            android:fontFamily="@font/boogaloo"
+            android:text="Computer"
+            android:textColor="#914A2A"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/radioWhitePlayer2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@android:color/white"
-            android:checked="true"
-            android:layout_marginLeft="5sp"/>
-    </RadioGroup>
+        <Button
+            android:shadowColor="#5E311E"
+            android:shadowDx="3.0"
+            android:shadowDy="2.8"
+            android:shadowRadius="3.0"
+            android:id="@+id/start_button"
+            android:layout_width="186dp"
+            android:layout_height="38dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_selector"
+            android:onClick="onClickStart"
+            android:text="Start"
+            android:textColor="#EFD892"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/boogaloo"/>
 
-    <CheckBox
-        android:id="@+id/checkBoxComputer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textViewComputer"
-        android:layout_alignBottom="@+id/textViewComputer"
-        android:layout_alignStart="@+id/editTextPlayer2"
-        android:buttonTint="@android:color/white"
-        android:textSize="22sp"/>
-
-    <TextView
-        android:id="@+id/textViewComputer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="11dp"
-        android:layout_toEndOf="@+id/checkBoxComputer"
-        android:text="Computer"
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/start_button"
-        android:layout_width="186dp"
-        android:layout_height="38dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="79dp"
-        android:background="@drawable/button_selector"
-        android:onClick="onClickStart"
-        android:text="Start"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp" />
+    </RelativeLayout>
 
 
 
-</RelativeLayout>
+</LinearLayout>

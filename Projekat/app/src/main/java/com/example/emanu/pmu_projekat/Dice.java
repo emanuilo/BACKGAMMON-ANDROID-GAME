@@ -20,7 +20,7 @@ public class Dice extends Figure implements Serializable{
     private int x2;
     private int y1;
     private int y2;
-    private int r = 7;
+    private float r;
     private int r1;
     private int r2;
     private int height;
@@ -33,6 +33,7 @@ public class Dice extends Figure implements Serializable{
         black.setColor(Color.BLACK);
         this.firstDice = firstDice;
         this.doubles = doubles;
+
     }
 
     @Override
@@ -117,6 +118,7 @@ public class Dice extends Figure implements Serializable{
                 r2 = 10;
             }
         }
+        r = 0.0064f * height;
     }
 
     public void roll(){

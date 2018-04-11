@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.emanu.pmu_projekat.StartedGameActivity"
+    tools:context="com.example.emanu.pmu_projekat.Activities.StartedGameActivity"
     android:background="@drawable/board">
 
     <Button
@@ -18,10 +18,16 @@
         android:background="@drawable/button_selector"
         android:text="Roll"
         android:onClick="onClickRoll"
-        android:textColor="#FFFFFF"
-        android:textSize="13sp" />
+        android:textColor="#EFD892"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:fontFamily="@font/boogaloo"/>
 
     <TextView
+        android:shadowColor="#5E311E"
+        android:shadowDx="3.0"
+        android:shadowDy="2.8"
+        android:shadowRadius="3.0"
         android:id="@+id/consoleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,9 +35,10 @@
         android:layout_marginTop="12dp"
         android:layout_marginLeft="25dp"
         android:text=" "
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:textColor="#EFD892"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/boogaloo"/>
 
     <com.example.emanu.pmu_projekat.MyImageView
         android:id="@+id/myImageView"

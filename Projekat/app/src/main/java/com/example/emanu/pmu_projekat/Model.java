@@ -1,10 +1,19 @@
 package com.example.emanu.pmu_projekat;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
+
+import com.example.emanu.pmu_projekat.Activities.StartedGameActivity;
+import com.example.emanu.pmu_projekat.DB.MyDbHelper;
+import com.example.emanu.pmu_projekat.DB.TableEntry;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -12,9 +21,12 @@ import java.util.List;
  */
 
 public class Model implements Serializable{
-    public static final int SHAKE_TIMEOUT = 500;
-    public static final int SPEED_THRESHOLD = 800;
-    public static final int DIFFTIME_THRESHOLD = 100;
+    private int SHAKE_TIMEOUT = 500;
+    private int SPEED_THRESHOLD = 1400;
+    private int DIFFTIME_THRESHOLD = 150;
+
+    public static final int ALL_BEARED_OFF = 15;
+
     public enum State{
         INITIAL_ROLL1, INITIAL_ROLL2, WAITING_FOR_ROLL, WAITING_FOR_MOVE;
     }
@@ -25,7 +37,7 @@ public class Model implements Serializable{
     private MyPaint black = new MyPaint();
     private MyPaint white = new MyPaint();
     private transient MyImageView myImageView;
-    private StartedGameActivity startedGameActivity;
+    private transient StartedGameActivity startedGameActivity;
     private int imageViewHeight;
     private int imageViewWidth;
 
@@ -62,6 +74,7 @@ public class Model implements Serializable{
     private MyMediaPlayer mediaPlayerRolling;
     private boolean loaded;
 
+    private static Model instance;
 
     public Model(String player1name, String player2name, boolean isPlayer1Black, boolean isComputer, StartedGameActivity startedGameActivity) {
         this.startedGameActivity = startedGameActivity;
@@ -84,6 +97,11 @@ public class Model implements Serializable{
         mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
         mediaPlayerShaking.setLooping(true);
         mediaPlayerRolling = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.rolling_dice));
+        instance = this;
+    }
+
+    public static Model getInstance(){
+        return instance;
     }
 
     public int selectChecker(int x, int y){
@@ -94,7 +112,7 @@ public class Model implements Serializable{
                 if(triangles.get(i).size() > 0){
                     int topCheckerIndex = triangles.get(i).size();
                     Checker topChecker = triangles.get(i).get(topCheckerIndex - 1);
-                    if(distance(x, topChecker.getX(), y, topChecker.getY()) <= Checker.RADIUS){
+                    if(distance(x, topChecker.getX(), y, topChecker.getY()) <= Checker.RADIUS * imageViewHeight){
                         currentChecker = topChecker;
                         sourceTriangle = triangles.get(i);
                         sourceTriangleIndex = i;
@@ -107,7 +125,7 @@ public class Model implements Serializable{
         }
         else{
             Checker topChecker = playerOnTurn.eatenCheckers.get(playerOnTurn.eatenCheckers.size() - 1);
-            if(distance(x, topChecker.getX(), y, topChecker.getY()) <= Checker.RADIUS){
+            if(distance(x, topChecker.getX(), y, topChecker.getY()) <= Checker.RADIUS * imageViewHeight){
                 currentChecker = topChecker;
                 sourceTriangle = playerOnTurn.eatenCheckers;
                 if(playerOnTurn.isWhite())
@@ -222,6 +240,8 @@ public class Model implements Serializable{
                     playerOnTurn.bearedOffCheckers.add(currentChecker);
                     destinationTriangleIndex = triangle.getTriangleIndex();
                     updateAvailableMoves();
+                    if(playerOnTurn.bearedOffCheckers.size() == ALL_BEARED_OFF)
+                        finishTheGame();
                     break;
                 }
                 else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3)){
@@ -247,6 +267,33 @@ public class Model implements Serializable{
 
             availablePositions = null;
             currentChecker = null;
+        }
+    }
+
+    public void finishTheGame() {
+        new SavingResult().execute();
+    }
+
+    private class SavingResult extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            MyDbHelper helper = new MyDbHelper(startedGameActivity.getApplicationContext());
+            SQLiteDatabase db = helper.getWritableDatabase();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Calendar calendar = Calendar.getInstance();
+
+            ContentValues values = new ContentValues();
+            values.put(TableEntry.COL_WINNER, playerOnTurn.name);
+            values.put(TableEntry.COL_SECOND_PLAYER, getOtherPlayer().name);
+            values.put(TableEntry.COL_DATETIME, simpleDateFormat.format(calendar.getTimeInMillis()));
+
+            db.insert(TableEntry.TABLE_NAME, null, values);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            startedGameActivity.gameRecapActivity(playerOnTurn.name, getOtherPlayer().name);
         }
     }
 
@@ -425,6 +472,13 @@ public class Model implements Serializable{
         }
     }
 
+    public Player getOtherPlayer(){
+        if(playerOnTurn == player1)
+            return player2;
+        else
+            return player1;
+    }
+
     public void switchPlayerOnTurn(){
         if(playerOnTurn == player1)
             playerOnTurn = player2;
@@ -473,6 +527,10 @@ public class Model implements Serializable{
         mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
         mediaPlayerShaking.setLooping(true);
         mediaPlayerRolling = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.rolling_dice));
+    }
+
+    public void setStartedGameActivity(StartedGameActivity startedGameActivity){
+        this.startedGameActivity = startedGameActivity;
     }
 
     public void setHeightAndWidth(int h, int w) {
@@ -525,5 +583,29 @@ public class Model implements Serializable{
 
     public List<Triangle> getAvailablePositions() {
         return availablePositions;
+    }
+
+    public int getSHAKE_TIMEOUT() {
+        return SHAKE_TIMEOUT;
+    }
+
+    public void setSHAKE_TIMEOUT(int SHAKE_TIMEOUT) {
+        this.SHAKE_TIMEOUT = SHAKE_TIMEOUT;
+    }
+
+    public int getSPEED_THRESHOLD() {
+        return SPEED_THRESHOLD;
+    }
+
+    public void setSPEED_THRESHOLD(int SPEED_THRESHOLD) {
+        this.SPEED_THRESHOLD = SPEED_THRESHOLD;
+    }
+
+    public int getDIFFTIME_THRESHOLD() {
+        return DIFFTIME_THRESHOLD;
+    }
+
+    public void setDIFFTIME_THRESHOLD(int DIFFTIME_THRESHOLD) {
+        this.DIFFTIME_THRESHOLD = DIFFTIME_THRESHOLD;
     }
 }

@@ -2,7 +2,6 @@ package com.example.emanu.pmu_projekat;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
@@ -12,7 +11,8 @@ import java.io.Serializable;
  */
 
 public class Checker extends Figure implements Serializable{
-    public static final int RADIUS = 40;
+    public static final double RADIUS = 0.0375;
+    public static final double BORDER_RADIUS = 0.0035;
     public static final double TRIANGLE_OFFSET = 0.0655;
     public static final double POSITION_OFFSET = 0.077;
     public static final double TRIANGLE0 = 0.133;
@@ -46,12 +46,12 @@ public class Checker extends Figure implements Serializable{
     @Override
     public void draw(@NonNull Canvas canvas) {
         if(bearedOff){
-            canvas.drawRoundRect(x - 4, y - 4, x2 + 4,y2 + 4, RADIUS + 4, RADIUS + 4, grey);
-            canvas.drawRoundRect(x, y, x2,y2, RADIUS, RADIUS, color);
+            canvas.drawRoundRect(x - (int)(BORDER_RADIUS * height), y - (int)(BORDER_RADIUS * height), x2 + (int)(BORDER_RADIUS * height),y2 + (int)(BORDER_RADIUS * height), (int)(height * RADIUS), (int)(height * RADIUS), grey);
+            canvas.drawRoundRect(x, y, x2, y2, (int)(RADIUS * height), (int)(RADIUS * height), color);
         }
         else{
-            canvas.drawCircle(x, y, RADIUS + 4, grey);
-            canvas.drawCircle(x, y, RADIUS, color);
+            canvas.drawCircle(x, y, (int)((RADIUS + BORDER_RADIUS) * height), grey);
+            canvas.drawCircle(x, y, (int)(RADIUS * height), color);
         }
     }
 

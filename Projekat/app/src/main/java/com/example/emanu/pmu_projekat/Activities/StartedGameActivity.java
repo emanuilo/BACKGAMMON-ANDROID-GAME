@@ -1,27 +1,30 @@
-package com.example.emanu.pmu_projekat;
+package com.example.emanu.pmu_projekat.Activities;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.emanu.pmu_projekat.Model;
+import com.example.emanu.pmu_projekat.MyImageView;
+import com.example.emanu.pmu_projekat.R;
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class StartedGameActivity extends AppCompatActivity implements SensorEventListener{
     public static final String SAVE_FILE = "save_file";
+    public static final String WINNER = "winner";
+    public static final String LOOSER = "looser";
 
     private static Context context;
     private MyImageView myImageView;
@@ -47,6 +50,7 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
         myImageView = findViewById(R.id.myImageView);
         myImageView.setModel(model);
         model.setMyImageView(myImageView);
+        model.setStartedGameActivity(this);
         myImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -85,6 +89,14 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
         }
     }
 
+    public void gameRecapActivity(String winner, String looser){
+        Intent intent = new Intent(this, GameRecapActivity.class);
+        intent.putExtra(StatsActivity.DELETE_SAVE, true);
+        intent.putExtra(WINNER, winner);
+        intent.putExtra(LOOSER, looser);
+        startActivity(intent);
+    }
+
     public boolean loadModel(){
         try(FileInputStream fileInputStream = context.openFileInput(SAVE_FILE);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
@@ -100,9 +112,9 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
         }
     }
 
-        @Override
-    protected void onStop() {
-        super.onStop();
+    @Override
+    protected void onPause() {
+        super.onPause();
 
         try(FileOutputStream fileOutputStream = context.openFileOutput(SAVE_FILE, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
@@ -136,6 +148,8 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
     public void onClickRoll(View view) {
         model.roll();
         myImageView.invalidate();
+        //todo obrisi ovo
+        model.finishTheGame();
     }
 
     @Override

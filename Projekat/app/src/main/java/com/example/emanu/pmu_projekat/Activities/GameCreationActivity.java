@@ -1,4 +1,4 @@
-package com.example.emanu.pmu_projekat;
+package com.example.emanu.pmu_projekat.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
+
+import com.example.emanu.pmu_projekat.R;
 
 public class GameCreationActivity extends AppCompatActivity {
     public static final String PLAYER1NAME = "player1name";
