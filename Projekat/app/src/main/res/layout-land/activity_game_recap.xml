@@ -125,6 +125,7 @@
         android:layout_height="22dp"
         android:layout_above="@+id/listViewRecap"
         android:layout_alignParentEnd="true"
+        android:layout_marginBottom="7dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/button_selector"
         android:fontFamily="@font/boogaloo"

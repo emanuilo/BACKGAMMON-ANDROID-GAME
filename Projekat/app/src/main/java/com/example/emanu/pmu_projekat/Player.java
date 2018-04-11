@@ -190,4 +190,8 @@ public class Player implements Serializable{
     public List<List<Checker>> getTriangles() {
         return triangles;
     }
+
+    public void onTheMove() {}
+
+    public void rollTheDice() {}
 }

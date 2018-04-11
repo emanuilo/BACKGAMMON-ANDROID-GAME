@@ -1,11 +1,15 @@
 package com.example.emanu.pmu_projekat;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Handler;
 
+import com.example.emanu.pmu_projekat.Activities.OptionsActivity;
 import com.example.emanu.pmu_projekat.Activities.StartedGameActivity;
 import com.example.emanu.pmu_projekat.DB.MyDbHelper;
 import com.example.emanu.pmu_projekat.DB.TableEntry;
@@ -32,11 +36,11 @@ public class Model implements Serializable{
     }
 
     public static final String ROLL_THE_DICE = "roll the dice";
-    public static final String IS_ON_TURN = "is on turn";
+    public static final String IS_ON_THE_MOVE = "is on the move";
 
     private MyPaint black = new MyPaint();
     private MyPaint white = new MyPaint();
-    private transient MyImageView myImageView;
+    protected transient MyImageView myImageView;
     private transient StartedGameActivity startedGameActivity;
     private int imageViewHeight;
     private int imageViewWidth;
@@ -47,6 +51,7 @@ public class Model implements Serializable{
 
     private Checker currentChecker;
 
+    private boolean isComputer;
     private State gameStatus;
     private Dice dice1;
     private Dice dice2;
@@ -70,19 +75,19 @@ public class Model implements Serializable{
     private float lastY;
     private float lastZ;
     private long lastShakeTime;
-    private MyMediaPlayer mediaPlayerShaking;
-    private MyMediaPlayer mediaPlayerRolling;
+    protected MyMediaPlayer mediaPlayerShaking;
+    protected MyMediaPlayer mediaPlayerRolling;
     private boolean loaded;
-
-    private static Model instance;
+    private boolean waitingForShake = true;
 
     public Model(String player1name, String player2name, boolean isPlayer1Black, boolean isComputer, StartedGameActivity startedGameActivity) {
+        this.isComputer = isComputer;
         this.startedGameActivity = startedGameActivity;
         black.setColor(Color.BLACK);
         white.setColor(Color.WHITE);
         player1 = new Human(player1name, isPlayer1Black ? black : white);
         if(isComputer)
-            player2 = new Computer(player2name, isPlayer1Black ? white : black);
+            player2 = new Computer(player2name, isPlayer1Black ? white : black, this);
         else
             player2 = new Human(player2name, isPlayer1Black ? white : black);
         playerOnTurn = player2;
@@ -97,11 +102,15 @@ public class Model implements Serializable{
         mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
         mediaPlayerShaking.setLooping(true);
         mediaPlayerRolling = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.rolling_dice));
-        instance = this;
+
+        setParameters();
     }
 
-    public static Model getInstance(){
-        return instance;
+    public void setParameters(){
+        SharedPreferences sharedPreferences = startedGameActivity.getSharedPreferences(OptionsActivity.PREFS, Context.MODE_PRIVATE);
+        SPEED_THRESHOLD = sharedPreferences.getInt(OptionsActivity.CURRENT_SPEED, OptionsActivity.DEFAULT_SPEED_VALUE);
+        DIFFTIME_THRESHOLD = sharedPreferences.getInt(OptionsActivity.CURRENT_REFRESH, OptionsActivity.DEFAULT_REFRESH_VALUE);
+        SHAKE_TIMEOUT = sharedPreferences.getInt(OptionsActivity.CURRENT_TIMEOUT, OptionsActivity.DEFAULT_TIMEOUT_VALUE);
     }
 
     public int selectChecker(int x, int y){
@@ -373,6 +382,7 @@ public class Model implements Serializable{
             switchPlayerOnTurn();
             gameStatus = State.WAITING_FOR_ROLL;
             startedGameActivity.setConsoleText(playerOnTurn.name + " " + ROLL_THE_DICE);
+            playerOnTurn.rollTheDice();
         }
     }
 
@@ -437,24 +447,32 @@ public class Model implements Serializable{
                 initialValuePlayer1 = dice1.getValue();
                 startedGameActivity.setConsoleText(player2.name + " " + ROLL_THE_DICE);
                 gameStatus = State.INITIAL_ROLL2;
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        player2.rollTheDice();  //if player2 is not a computer, will do nothin
+                    }
+                }, 1000);
                 break;
             case INITIAL_ROLL2:
                 dice2.roll();
                 dice2.setShow(true);
                 if(initialValuePlayer1 < dice2.getValue()){
                     playerOnTurn = player2;
-                    startedGameActivity.setConsoleText(player2.name + " " + IS_ON_TURN);
+                    startedGameActivity.setConsoleText(player2.name + " " + IS_ON_THE_MOVE);
                     gameStatus = State.WAITING_FOR_MOVE;
                     createAvailableMoves();
+                    player2.onTheMove(); //if player2 is not a computer, will do nothin
                 }
                 else if (initialValuePlayer1 > dice2.getValue()){
                     playerOnTurn = player1;
-                    startedGameActivity.setConsoleText(player1.name + " " + IS_ON_TURN);
+                    startedGameActivity.setConsoleText(player1.name + " " + IS_ON_THE_MOVE);
                     gameStatus = State.WAITING_FOR_MOVE;
                     createAvailableMoves();
                 }
                 else{ //equals
-
+                    //todo ispocetka bacanje
                 }
                 break;
             case WAITING_FOR_ROLL:
@@ -467,7 +485,8 @@ public class Model implements Serializable{
                 doubles = false;
                 createAvailableMoves();
                 gameStatus = State.WAITING_FOR_MOVE;
-                startedGameActivity.setConsoleText("");
+                startedGameActivity.setConsoleText(playerOnTurn.name + " " + IS_ON_THE_MOVE);
+                playerOnTurn.onTheMove(); //if playerOnTurn is not a computer, will do nothin
                 break;
         }
     }
@@ -499,7 +518,7 @@ public class Model implements Serializable{
             if(speed > SPEED_THRESHOLD){
                 if(!mediaPlayerShaking.isPlaying())
                     mediaPlayerShaking.start();
-
+                waitingForShake = true;
                 lastShakeTime = currentTime;
             }
 
@@ -508,13 +527,15 @@ public class Model implements Serializable{
             lastZ = values[2];
         }
 
-        if(currentTime - lastShakeTime > SHAKE_TIMEOUT){ //prestanak muckanja
+        if(currentTime - lastShakeTime > SHAKE_TIMEOUT && waitingForShake){ //prestanak muckanja
+            waitingForShake = false;
             if(mediaPlayerShaking.isPlaying()){
                 mediaPlayerShaking.pause();
                 mediaPlayerRolling.start();
                 roll();
                 myImageView.invalidate();
                 return;
+
             }
         }
     }
@@ -563,6 +584,14 @@ public class Model implements Serializable{
 
     public void setMyImageView(MyImageView myImageView) {
         this.myImageView = myImageView;
+    }
+
+    public Checker getCurrentChecker() {
+        return currentChecker;
+    }
+
+    public void setCurrentChecker(Checker currentChecker) {
+        this.currentChecker = currentChecker;
     }
 
     public Dice getDice1() {

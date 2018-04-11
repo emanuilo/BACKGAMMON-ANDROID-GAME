@@ -61,15 +61,11 @@ public class Triangle extends Figure implements Serializable{
         color = new Paint();
         color.setColor(Color.MAGENTA);
         color.setAlpha(110);
+        setCoordinates();
     }
 
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        Path trianglePath = new Path();
+    public void setCoordinates(){
         switch (triangleIndex){
-            case -1: case 24:
-                canvas.drawRoundRect(x1, y1, x2, y2, BEAR_OFF_RADIUS, BEAR_OFF_RADIUS, color);
-                break;
             case 0: case 1: case 2: case 3: case 4: case 5:
                 x1 = (int)(width * (POS_X1_UP + triangleIndex * OFFSET));
                 y1 = (int)(height * POS_Y1_UP);
@@ -77,10 +73,6 @@ public class Triangle extends Figure implements Serializable{
                 y2 = (int)(height * POS_Y2_UP);
                 x3 = (int)(width * (POS_X3_UP + triangleIndex * OFFSET));
                 y3 = (int)(height * POS_Y3_UP);
-                trianglePath.moveTo((int)(width * (POS_X1_UP + triangleIndex * OFFSET)), (int)(height * POS_Y1_UP));
-                trianglePath.lineTo((int)(width * (POS_X2_UP + triangleIndex * OFFSET)), (int)(height * POS_Y2_UP));
-                trianglePath.lineTo((int)(width * (POS_X3_UP + triangleIndex * OFFSET)), (int)(height * POS_Y3_UP));
-                trianglePath.lineTo((int)(width * (POS_X1_UP + triangleIndex * OFFSET)), (int)(height * POS_Y1_UP));
                 break;
             case 6: case 7: case 8: case 9: case 10: case 11:
                 x1 = (int)(width * (OFFSET2 + POS_X1_UP + triangleIndex * OFFSET));
@@ -89,10 +81,6 @@ public class Triangle extends Figure implements Serializable{
                 y2 = (int)(height * POS_Y2_UP);
                 x3 = (int)(width * (OFFSET2 + POS_X3_UP + triangleIndex * OFFSET));
                 y3 = (int)(height * POS_Y3_UP);
-                trianglePath.moveTo((int)(width * (OFFSET2 + POS_X1_UP + triangleIndex * OFFSET)), (int)(height * POS_Y1_UP));
-                trianglePath.lineTo((int)(width * (OFFSET2 + POS_X2_UP + triangleIndex * OFFSET)), (int)(height * POS_Y2_UP));
-                trianglePath.lineTo((int)(width * (OFFSET2 + POS_X3_UP + triangleIndex * OFFSET)), (int)(height * POS_Y3_UP));
-                trianglePath.lineTo((int)(width * (OFFSET2 + POS_X1_UP + triangleIndex * OFFSET)), (int)(height * POS_Y1_UP));
                 break;
             case 12: case 13: case 14: case 15: case 16: case 17:
                 x1 = (int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2));
@@ -101,10 +89,6 @@ public class Triangle extends Figure implements Serializable{
                 y2 = (int)(height * POS_Y2_DOWN);
                 x3 = (int)(width * (POS_X3_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2));
                 y3 = (int)(height * POS_Y3_DOWN);
-                trianglePath.moveTo((int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2)), (int)(height * POS_Y1_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X2_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2)), (int)(height * POS_Y2_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X3_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2)), (int)(height * POS_Y3_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET + OFFSET2)), (int)(height * POS_Y1_DOWN));
                 break;
             case 18: case 19: case 20: case 21: case 22: case 23:
                 x1 = (int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET));
@@ -113,15 +97,25 @@ public class Triangle extends Figure implements Serializable{
                 y2 = (int)(height * POS_Y2_DOWN);
                 x3 = (int)(width * (POS_X3_DOWN + (23 - triangleIndex) * OFFSET));
                 y3 = (int)(height * POS_Y3_DOWN);
-                trianglePath.moveTo((int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET)), (int)(height * POS_Y1_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X2_DOWN + (23 - triangleIndex) * OFFSET)), (int)(height * POS_Y2_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X3_DOWN + (23 - triangleIndex) * OFFSET)), (int)(height * POS_Y3_DOWN));
-                trianglePath.lineTo((int)(width * (POS_X1_DOWN + (23 - triangleIndex) * OFFSET)), (int)(height * POS_Y1_DOWN));
                 break;
         }
+    }
+
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        Path trianglePath = new Path();
+        if(triangleIndex == -1 || triangleIndex == 24){
+            canvas.drawRoundRect(x1, y1, x2, y2, BEAR_OFF_RADIUS, BEAR_OFF_RADIUS, color);
+        }
+        else{
+            trianglePath.moveTo(x1, y1);
+            trianglePath.lineTo(x2, y2);
+            trianglePath.lineTo(x3, y3);
+            trianglePath.lineTo(x1, y1);
+        }
+            canvas.drawPath(trianglePath, color);
 
 
-        canvas.drawPath(trianglePath, color);
     }
 
     public void setBearingOff(int black){
