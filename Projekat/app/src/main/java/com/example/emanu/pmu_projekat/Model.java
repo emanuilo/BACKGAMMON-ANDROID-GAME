@@ -41,32 +41,32 @@ public class Model implements Serializable{
     private MyPaint black = new MyPaint();
     private MyPaint white = new MyPaint();
     protected transient MyImageView myImageView;
-    private transient StartedGameActivity startedGameActivity;
+    protected transient StartedGameActivity startedGameActivity;
     private int imageViewHeight;
     private int imageViewWidth;
 
     private Player player1;
-    private Player player2;
+    protected Player player2;
     private Player playerOnTurn;
 
     private Checker currentChecker;
 
     private boolean isComputer;
-    private State gameStatus;
-    private Dice dice1;
-    private Dice dice2;
-    private Dice dice3;
-    private Dice dice4;
+    protected State gameStatus;
+    private Dice die1;
+    private Dice die2;
+    private Dice die3;
+    private Dice die4;
     private int initialValuePlayer1;
     private List<Integer> availableMoves;
-    private List<Triangle> availablePositions;
+    protected List<Triangle> availablePositions;
     private List<Checker> sourceTriangle;
     private int sourceTriangleIndex;
     private int destinationTriangleIndex;
     private int oldX;
     private int oldY;
     private boolean doubles;
-    private List<Dice> dices = new ArrayList<>();
+    private List<Dice> dice = new ArrayList<>();
     private int usedDices;
     private Player opponent;
 
@@ -94,10 +94,10 @@ public class Model implements Serializable{
         gameStatus = State.INITIAL_ROLL1;
         startedGameActivity.setConsoleText(player1.name + " " + ROLL_THE_DICE);
 
-        dices.add(dice3 = new Dice(true, true));
-        dices.add(dice4 = new Dice(false, true));
-        dices.add(dice1 = new Dice(true, false));
-        dices.add(dice2 = new Dice(false, false));
+        dice.add(die3 = new Dice(true, true));
+        dice.add(die4 = new Dice(false, true));
+        dice.add(die1 = new Dice(true, false));
+        dice.add(die2 = new Dice(false, false));
 
         mediaPlayerShaking = new MyMediaPlayer(MediaPlayer.create(StartedGameActivity.getAppContext(), R.raw.shaking_dice));
         mediaPlayerShaking.setLooping(true);
@@ -248,12 +248,12 @@ public class Model implements Serializable{
                     currentChecker.bearOff(playerOnTurn.isWhite() ? 0 : 1, playerOnTurn.bearedOffCheckers.size());
                     playerOnTurn.bearedOffCheckers.add(currentChecker);
                     destinationTriangleIndex = triangle.getTriangleIndex();
-                    updateAvailableMoves();
                     if(playerOnTurn.bearedOffCheckers.size() == ALL_BEARED_OFF)
                         finishTheGame();
+                    updateAvailableMoves();
                     break;
                 }
-                else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3)){
+                else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3, triangle.getTriangleIndex() > 11)){
                     opponent.eatOpponentsChecker(triangle.getTriangleIndex());
                     sourceTriangle.remove(currentChecker); //remove from old triangle
                     int position = playerOnTurn.getTriangles().get(triangle.getTriangleIndex()).size(); //position index in new triangle
@@ -340,8 +340,8 @@ public class Model implements Serializable{
 
         if(doubles){
             int max = availableMoves.size();
-            for(int i = 0; i <= moveToDelete; i++){ //depending on what move to delete, result is the same number of used dices
-                dices.get(usedDices++).incOpacity();
+            for(int i = 0; i <= moveToDelete; i++){ //depending on what move to delete, result is the same number of used dice
+                dice.get(usedDices++).incOpacity();
             }
             while((moveToDelete + 1) > 0){
                 availableMoves.remove(max - 1);
@@ -355,34 +355,69 @@ public class Model implements Serializable{
                     case 0:
                         availableMoves.remove(2);
                         availableMoves.remove(0);
-                        dice1.incOpacity();
+                        die1.incOpacity();
                     break;
                     case 1:
                         availableMoves.remove(2);
                         availableMoves.remove(1);
-                        dice2.incOpacity();
+                        die2.incOpacity();
                         break;
                     case 2:
                         availableMoves.remove(2);
                         availableMoves.remove(1);
                         availableMoves.remove(0);
-                        dice1.incOpacity();
-                        dice2.incOpacity();
+                        die1.incOpacity();
+                        die2.incOpacity();
                         break;
                 }
             }
             else{ //size == 1
                 availableMoves.remove(0);
-                dice1.incOpacity();
-                dice2.incOpacity();
+                die1.incOpacity();
+                die2.incOpacity();
             }
         }
 
-        if(availableMoves.size() == 0){
+        if(availableMoves.size() == 0 || !anyAvailablePosition()){
             switchPlayerOnTurn();
             gameStatus = State.WAITING_FOR_ROLL;
             startedGameActivity.setConsoleText(playerOnTurn.name + " " + ROLL_THE_DICE);
             playerOnTurn.rollTheDice();
+        }
+        else{
+            if(playerOnTurn == player2){
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playerOnTurn.onTheMove(); //if playerOnTurn is not a computer, will do nothin
+                    }
+                }, 2100);
+            }
+        }
+
+    }
+
+    public boolean anyAvailablePosition(){
+        if(playerOnTurn.eatenCheckers.size() > 0){
+            Checker topChecker = playerOnTurn.eatenCheckers.get(playerOnTurn.eatenCheckers.size() - 1);
+            int checkerSource = selectChecker(topChecker.getX(), topChecker.getY());
+            findSpots(checkerSource);
+            if(availablePositions.size() == 0){
+                return false;
+            }
+            return true;
+        }
+        else{
+            ArrayList<Integer> nonEmptyTrianglesIndexes = playerOnTurn.getNonEmptyTrianglesIndexes();
+            for(int i = 0; i < nonEmptyTrianglesIndexes.size(); i++){
+                int source = nonEmptyTrianglesIndexes.get(i);
+                findSpots(source);
+                if(availablePositions.size() > 0){   //finding source checker with any available moves
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -390,22 +425,30 @@ public class Model implements Serializable{
         return px >= x1 && px <= x2 && py >= y1 && py <= y2;
     }
 
-    public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2, int x3, int y3){
+    public boolean isInAvailableSpot(int px, int py, int x1, int y1, int x2, int y2, int x3, int y3, boolean down){
 //        double w1 = (x1*(y3 - y1) + (py - y1)*(x3 - x1) - px*(y3 - y1))/((y2 - y1)*(x3 - x1) - (x2 - x1)*(y3 - y1));
 //        double w2 = (py - y1 - w1*(y2 - y1))/(y3 - y1);
 //
 //        return w1 >= 0 && w1 >= 0 && (w1 + w2) <= 1;
 
-        int as_x = px-x1;
-        int as_y = py-y1;
+//        int as_x = px-x1;
+//        int as_y = py-y1;
+//
+//        boolean s_ab = (x2-x1)*as_y-(y2-y1)*as_x > 0;
+//
+//        if((x3-x1)*as_y-(y3-y1)*as_x > 0 == s_ab) return false;
+//
+//        if((x3-x2)*(py-y2)-(y3-y2)*(px-x2) > 0 != s_ab) return false;
+//
+//        return true;
 
-        boolean s_ab = (x2-x1)*as_y-(y2-y1)*as_x > 0;
+        if(!down)
+            return px > x1 && px < x2 && py > y1 && py < (y3 + 30);
+        else
+            return px > x1 && px < x2 && py < y1 && py > (y3 - 30);
 
-        if((x3-x1)*as_y-(y3-y1)*as_x > 0 == s_ab) return false;
 
-        if((x3-x2)*(py-y2)-(y3-y2)*(px-x2) > 0 != s_ab) return false;
 
-        return true;
     }
 
     private double distance(int x1, int x2, int y1, int y2){
@@ -416,38 +459,38 @@ public class Model implements Serializable{
         availableMoves = new ArrayList<>();
         usedDices = 0;
         for(int i = 0; i < 4; i++){
-            dices.get(i).resetOpacity();
+            dice.get(i).resetOpacity();
         }
-        if(dice1.getValue() == dice2.getValue()){ //when player gets doubles, that counts as 4x
-            availableMoves.add(dice1.getValue());
-            availableMoves.add(dice1.getValue() * 2);
-            availableMoves.add(dice2.getValue() * 3);
-            availableMoves.add(dice2.getValue() * 4);
+        if(die1.getValue() == die2.getValue()){ //when player gets doubles, that counts as 4x
+            availableMoves.add(die1.getValue());
+            availableMoves.add(die1.getValue() * 2);
+            availableMoves.add(die2.getValue() * 3);
+            availableMoves.add(die2.getValue() * 4);
             doubles = true;
-            dice3.setValue(dice1.getValue());
-            dice3.setShow(true);
-            dice4.setValue(dice1.getValue());
-            dice4.setShow(true);
+            die3.setValue(die1.getValue());
+            die3.setShow(true);
+            die4.setValue(die1.getValue());
+            die4.setShow(true);
         }
         else{
-            availableMoves.add(dice1.getValue());
-            availableMoves.add(dice2.getValue());
-            availableMoves.add(dice1.getValue() + dice2.getValue());
+            availableMoves.add(die1.getValue());
+            availableMoves.add(die2.getValue());
+            availableMoves.add(die1.getValue() + die2.getValue());
         }
     }
 
     public void roll(){
+        Handler handler = new Handler();
 
         switch (gameStatus){
             case INITIAL_ROLL1:
-                dice1.roll();
-                dice1.setShow(true);
-                dice2.setShow(false);
+                die1.roll();
+                die1.setShow(true);
+                die2.setShow(false);
 
-                initialValuePlayer1 = dice1.getValue();
+                initialValuePlayer1 = die1.getValue();
                 startedGameActivity.setConsoleText(player2.name + " " + ROLL_THE_DICE);
                 gameStatus = State.INITIAL_ROLL2;
-                Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -456,37 +499,49 @@ public class Model implements Serializable{
                 }, 1000);
                 break;
             case INITIAL_ROLL2:
-                dice2.roll();
-                dice2.setShow(true);
-                if(initialValuePlayer1 < dice2.getValue()){
+                die2.roll();
+                die2.setShow(true);
+                if(initialValuePlayer1 < die2.getValue()){
                     playerOnTurn = player2;
                     startedGameActivity.setConsoleText(player2.name + " " + IS_ON_THE_MOVE);
                     gameStatus = State.WAITING_FOR_MOVE;
                     createAvailableMoves();
-                    player2.onTheMove(); //if player2 is not a computer, will do nothin
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            player2.onTheMove(); //if player2 is not a computer, will do nothin
+                        }
+                    }, 2100);
                 }
-                else if (initialValuePlayer1 > dice2.getValue()){
+                else if (initialValuePlayer1 > die2.getValue()){
                     playerOnTurn = player1;
                     startedGameActivity.setConsoleText(player1.name + " " + IS_ON_THE_MOVE);
                     gameStatus = State.WAITING_FOR_MOVE;
                     createAvailableMoves();
                 }
                 else{ //equals
-                    //todo ispocetka bacanje
+                    switchPlayerOnTurn();
+                    gameStatus = State.INITIAL_ROLL1;
+                    startedGameActivity.setConsoleText(player1.name + " " + ROLL_THE_DICE);
                 }
                 break;
             case WAITING_FOR_ROLL:
-                dice1.roll();
-                dice2.roll();
-                dice1.setShow(true);
-                dice2.setShow(true);
-                dice3.setShow(false);
-                dice4.setShow(false);
+                die1.roll();
+                die2.roll();
+                die1.setShow(true);
+                die2.setShow(true);
+                die3.setShow(false);
+                die4.setShow(false);
                 doubles = false;
                 createAvailableMoves();
                 gameStatus = State.WAITING_FOR_MOVE;
                 startedGameActivity.setConsoleText(playerOnTurn.name + " " + IS_ON_THE_MOVE);
-                playerOnTurn.onTheMove(); //if playerOnTurn is not a computer, will do nothin
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playerOnTurn.onTheMove(); //if playerOnTurn is not a computer, will do nothin
+                    }
+                }, 2100);
                 break;
         }
     }
@@ -499,8 +554,9 @@ public class Model implements Serializable{
     }
 
     public void switchPlayerOnTurn(){
-        if(playerOnTurn == player1)
+        if(playerOnTurn == player1){
             playerOnTurn = player2;
+        }
         else
             playerOnTurn = player1;
     }
@@ -559,10 +615,10 @@ public class Model implements Serializable{
         this.imageViewWidth = w;
         player1.setHeightAndWidth(h, w);
         player2.setHeightAndWidth(h, w);
-        dice1.setHeightAndWidth(h, w);
-        dice2.setHeightAndWidth(h, w);
-        dice3.setHeightAndWidth(h, w);
-        dice4.setHeightAndWidth(h, w);
+        die1.setHeightAndWidth(h, w);
+        die2.setHeightAndWidth(h, w);
+        die3.setHeightAndWidth(h, w);
+        die4.setHeightAndWidth(h, w);
         if(!loaded){
             player1.initCheckers();
             player2.initCheckers();
@@ -594,20 +650,20 @@ public class Model implements Serializable{
         this.currentChecker = currentChecker;
     }
 
-    public Dice getDice1() {
-        return dice1;
+    public Dice getDie1() {
+        return die1;
     }
 
-    public Dice getDice2() {
-        return dice2;
+    public Dice getDie2() {
+        return die2;
     }
 
-    public Dice getDice3() {
-        return dice3;
+    public Dice getDie3() {
+        return die3;
     }
 
-    public Dice getDice4() {
-        return dice4;
+    public Dice getDie4() {
+        return die4;
     }
 
     public List<Triangle> getAvailablePositions() {

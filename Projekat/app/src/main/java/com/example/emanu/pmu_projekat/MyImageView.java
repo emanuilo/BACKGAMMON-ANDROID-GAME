@@ -2,16 +2,9 @@ package com.example.emanu.pmu_projekat;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -69,10 +62,10 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView{
 
         List<Checker> player1Checkers = model.getPlayer1Checkers();
         List<Checker> player2Checkers = model.getPlayer2Checkers();
-        Dice dice1 = model.getDice1();
-        Dice dice2 = model.getDice2();
-        Dice dice3 = model.getDice3();
-        Dice dice4 = model.getDice4();
+        Dice dice1 = model.getDie1();
+        Dice dice2 = model.getDie2();
+        Dice dice3 = model.getDie3();
+        Dice dice4 = model.getDie4();
         List<Triangle> availablePositions = model.getAvailablePositions();
 
         for (Checker checker : player1Checkers) {

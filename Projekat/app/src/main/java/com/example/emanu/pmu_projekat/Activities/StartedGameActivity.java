@@ -148,8 +148,7 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
     public void onClickRoll(View view) {
         model.roll();
         myImageView.invalidate();
-        //todo obrisi ovo
-        model.finishTheGame();
+//        model.finishTheGame();
     }
 
     @Override

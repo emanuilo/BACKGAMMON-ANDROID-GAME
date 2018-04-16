@@ -1,6 +1,7 @@
 package com.example.emanu.pmu_projekat.Activities;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,18 +16,14 @@ public class LoadingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_loading);
         hideStatusBar();
 
-        new Thread(new Runnable() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(2000);
-                    Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
-                    startActivity(intent);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
+                startActivity(intent);
             }
-        }).start();
+        }, 2000);
     }
 
     public void hideStatusBar(){

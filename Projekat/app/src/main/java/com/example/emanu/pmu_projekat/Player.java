@@ -22,6 +22,7 @@ public class Player implements Serializable{
     protected int width;
     protected boolean isBearingOff;
 
+
     public Player(String name, MyPaint color) {
         this.name = name;
         this.color = color;
@@ -194,4 +195,6 @@ public class Player implements Serializable{
     public void onTheMove() {}
 
     public void rollTheDice() {}
+
+    public ArrayList<Integer> getNonEmptyTrianglesIndexes(){return null;}
 }
