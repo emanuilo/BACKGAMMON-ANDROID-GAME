@@ -256,9 +256,11 @@ public class Model implements Serializable{
                 else if(!triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2, x3, y3, triangle.getTriangleIndex() > 11)){
                     opponent.eatOpponentsChecker(triangle.getTriangleIndex());
                     sourceTriangle.remove(currentChecker); //remove from old triangle
+                    rearrange(sourceTriangle, sourceTriangleIndex);
                     int position = playerOnTurn.getTriangles().get(triangle.getTriangleIndex()).size(); //position index in new triangle
                     playerOnTurn.getTriangles().get(triangle.getTriangleIndex()).add(currentChecker); //add checker to new triangle
                     currentChecker.setOnPosition(imageViewHeight, imageViewWidth, triangle.getTriangleIndex(), position); //change x,y coords
+                    rearrange(playerOnTurn.getTriangles().get(triangle.getTriangleIndex()), triangle.getTriangleIndex());
                     destinationTriangleIndex = triangle.getTriangleIndex();
                     allInHomeBoard(playerOnTurn.isWhite() ? 0 : 1);
                     updateAvailableMoves();
@@ -277,6 +279,14 @@ public class Model implements Serializable{
             availablePositions = null;
             currentChecker = null;
         }
+    }
+
+    public void rearrange(List<Checker> checkers, int triangleIndex){
+        Checker.setCustomOffset(checkers.size());
+        for(int i = 0; i < checkers.size(); i++){
+            checkers.get(i).setOnPosition(imageViewHeight, imageViewWidth, triangleIndex, i);
+        }
+        Checker.resetOffset();
     }
 
     public void finishTheGame() {
@@ -692,5 +702,13 @@ public class Model implements Serializable{
 
     public void setDIFFTIME_THRESHOLD(int DIFFTIME_THRESHOLD) {
         this.DIFFTIME_THRESHOLD = DIFFTIME_THRESHOLD;
+    }
+
+    public MyMediaPlayer getMediaPlayerShaking() {
+        return mediaPlayerShaking;
+    }
+
+    public MyMediaPlayer getMediaPlayerRolling() {
+        return mediaPlayerRolling;
     }
 }

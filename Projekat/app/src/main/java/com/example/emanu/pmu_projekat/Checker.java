@@ -14,9 +14,11 @@ public class Checker extends Figure implements Serializable{
     public static final double RADIUS = 0.0375;
     public static final double BORDER_RADIUS = 0.0035;
     public static final double TRIANGLE_OFFSET = 0.0655;
-    public static final double POSITION_OFFSET = 0.077;
+    public static double POSITION_OFFSET = 0.077;
+    public static final double POSITION_OFFSET_DEFAULT = 0.077;
     public static final double TRIANGLE0 = 0.133;
     public static final double TRIANGLE6 = 0.618;
+    public static final double TRIANGLE_HEIGHT = 0.308;
     public static final double POS1UP = 0.16;
     public static final double POS1DOWN = 0.937;
     public static final double POS1ON_EDGE_X = 0.54;
@@ -87,6 +89,19 @@ public class Checker extends Figure implements Serializable{
         x2 = (int) (width * 0.06);
         y = (int) (height * (0.953 - index * 0.025 - blackChecker * 0.48));
         y2 = (int) (height * (0.972 - index * 0.025 - blackChecker * 0.48));
+    }
+
+    public static void setCustomOffset(int num){
+        if(num < 5){
+            resetOffset();
+            return;
+        }
+
+        POSITION_OFFSET = TRIANGLE_HEIGHT / (num - 1);
+    }
+
+    public static void resetOffset(){
+        POSITION_OFFSET = POSITION_OFFSET_DEFAULT;
     }
 
     public int getX() {

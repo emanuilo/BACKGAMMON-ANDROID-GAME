@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     public void hideStatusBar(){
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;

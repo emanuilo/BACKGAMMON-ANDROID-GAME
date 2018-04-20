@@ -116,6 +116,12 @@ public class StartedGameActivity extends AppCompatActivity implements SensorEven
     protected void onPause() {
         super.onPause();
 
+        if(model.getMediaPlayerRolling().isPlaying())
+            model.getMediaPlayerRolling().pause();
+
+        if(model.getMediaPlayerShaking().isPlaying())
+            model.getMediaPlayerShaking().pause();
+
         try(FileOutputStream fileOutputStream = context.openFileOutput(SAVE_FILE, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
             objectOutputStream.writeObject(model);
