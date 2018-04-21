@@ -60,20 +60,48 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView{
         int height = canvas.getHeight();
         int width = canvas.getWidth();
 
-        List<Checker> player1Checkers = model.getPlayer1Checkers();
-        List<Checker> player2Checkers = model.getPlayer2Checkers();
+        List<List<Checker>> player1Checkers = model.getPlayer1Checkers();
+        List<List<Checker>> player2Checkers = model.getPlayer2Checkers();
         Dice dice1 = model.getDie1();
         Dice dice2 = model.getDie2();
         Dice dice3 = model.getDie3();
         Dice dice4 = model.getDie4();
         List<Triangle> availablePositions = model.getAvailablePositions();
 
-        for (Checker checker : player1Checkers) {
-            checker.draw(canvas);
+        for (int i = 0; i < player1Checkers.size(); i++) {
+            if(player1Checkers.get(i).size() > 0){
+                for (int j = 0; j < player1Checkers.get(i).size(); j++) {
+                    player1Checkers.get(i).get(j).draw(canvas);
+                }
+            }
         }
 
-        for (Checker checker : player2Checkers) {
-            checker.draw(canvas);
+        for (int i = 0; i < player2Checkers.size(); i++) {
+            if(player2Checkers.get(i).size() > 0){
+                for (int j = 0; j < player2Checkers.get(i).size(); j++) {
+                    player2Checkers.get(i).get(j).draw(canvas);
+                }
+            }
+        }
+
+        for (Checker eatenChecker :
+                model.getPlayer1().eatenCheckers) {
+            eatenChecker.draw(canvas);
+        }
+
+        for (Checker eatenChecker :
+                model.getPlayer2().eatenCheckers) {
+            eatenChecker.draw(canvas);
+        }
+
+        for (Checker bearedOffChecker :
+                model.getPlayer1().bearedOffCheckers) {
+            bearedOffChecker.draw(canvas);
+        }
+
+        for (Checker bearedOffChecker :
+                model.getPlayer2().bearedOffCheckers) {
+            bearedOffChecker.draw(canvas);
         }
 
         dice1.draw(canvas);

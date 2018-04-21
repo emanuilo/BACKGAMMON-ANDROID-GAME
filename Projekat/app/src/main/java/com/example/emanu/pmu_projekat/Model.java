@@ -245,6 +245,7 @@ public class Model implements Serializable{
                 int y3 = triangle.getY3();
                 if(triangle.isBearingOff() && isInAvailableSpot(x, y, x1, y1, x2, y2)){
                     sourceTriangle.remove(currentChecker); //remove from old triangle
+                    rearrange(sourceTriangle, sourceTriangleIndex);
                     currentChecker.bearOff(playerOnTurn.isWhite() ? 0 : 1, playerOnTurn.bearedOffCheckers.size());
                     playerOnTurn.bearedOffCheckers.add(currentChecker);
                     destinationTriangleIndex = triangle.getTriangleIndex();
@@ -636,12 +637,12 @@ public class Model implements Serializable{
 
     }
 
-    public List<Checker> getPlayer1Checkers(){
-        return player1.getCheckers();
+    public List<List<Checker>> getPlayer1Checkers(){
+        return player1.triangles;
     }
 
-    public List<Checker> getPlayer2Checkers(){
-        return player2.getCheckers();
+    public List<List<Checker>> getPlayer2Checkers(){
+        return player2.triangles;
     }
 
     public MyImageView getMyImageView() {
@@ -658,6 +659,14 @@ public class Model implements Serializable{
 
     public void setCurrentChecker(Checker currentChecker) {
         this.currentChecker = currentChecker;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
     }
 
     public Dice getDie1() {
