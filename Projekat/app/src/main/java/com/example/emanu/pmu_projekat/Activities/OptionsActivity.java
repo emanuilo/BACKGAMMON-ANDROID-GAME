@@ -16,7 +16,7 @@ public class OptionsActivity extends AppCompatActivity {
     public static final String PREFS = "prefs";
 
     private static final int SPEED_DIFF = 100;
-    private static final int MIN_SPEED = 800;
+    private static final int MIN_SPEED = 2600;
 
     private static final int REFRESH_DIFF = 20;
     private static final int MIN_REFRESH = 50;
@@ -24,7 +24,7 @@ public class OptionsActivity extends AppCompatActivity {
     private static final int TIMEOUT_DIFF = 100;
     private static final int MIN_TIMEOUT = 100;
 
-    public static final int DEFAULT_SPEED_VALUE = 1200;
+    public static final int DEFAULT_SPEED_VALUE = 3200;
     public static final String CURRENT_SPEED = "current_speed";
 
     public static final int DEFAULT_REFRESH_VALUE = 150;

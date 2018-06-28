@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Model implements Serializable{
     private int SHAKE_TIMEOUT = 500;
-    private int SPEED_THRESHOLD = 1400;
+    private int SPEED_THRESHOLD = 10000;
     private int DIFFTIME_THRESHOLD = 150;
 
     public static final int ALL_BEARED_OFF = 15;
@@ -582,6 +582,7 @@ public class Model implements Serializable{
             lastTime = currentTime;
             float speed = Math.abs(values[0] + values[1] + values[2] - lastX - lastY - lastZ) / diffTime * 10000;
 
+            int temp = SPEED_THRESHOLD;
             if(speed > SPEED_THRESHOLD){
                 if(!mediaPlayerShaking.isPlaying())
                     mediaPlayerShaking.start();
